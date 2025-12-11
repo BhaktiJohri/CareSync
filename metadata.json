@@ -1,0 +1,7 @@
+{
+  "name": "CareSync2.0",
+  "description": "An AI-powered medication assistant that converts prescription photos into smart schedules and reminders.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
