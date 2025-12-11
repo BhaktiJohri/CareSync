@@ -1,13 +1,12 @@
-
+﻿
 import React, { useState, useEffect } from 'react';
-import { Caregiver } from '../types';
 import { getCaregivers, saveCaregiver, deleteCaregiver } from '../services/storageService';
 import { Users, UserPlus, Trash2, Mail, Heart, Phone } from 'lucide-react';
 
-const CaregiversPage: React.FC = () => {
-  const [caregivers, setCaregivers] = useState<Caregiver[]>([]);
+const CaregiversPage = () => {
+  const [caregivers, setCaregivers] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
-  
+
   // Form State
   const [formData, setFormData] = useState({
     name: '',
@@ -19,7 +18,7 @@ const CaregiversPage: React.FC = () => {
     setCaregivers(getCaregivers());
   }, []);
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id) => {
     if (confirm('Are you sure you want to remove this caregiver?')) {
       deleteCaregiver(id);
       setCaregivers(getCaregivers());
@@ -29,7 +28,7 @@ const CaregiversPage: React.FC = () => {
   const handleSave = () => {
     if (!formData.name || !formData.email) return;
 
-    const newCaregiver: Caregiver = {
+    const newCaregiver = {
       id: `cg-${Date.now()}`,
       name: formData.name,
       relation: formData.relation || 'Family',
@@ -39,7 +38,7 @@ const CaregiversPage: React.FC = () => {
 
     saveCaregiver(newCaregiver);
     setCaregivers(getCaregivers());
-    
+
     // Reset
     setFormData({ name: '', relation: '', email: '' });
     setShowAddForm(false);
@@ -50,15 +49,15 @@ const CaregiversPage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row items-center justify-between gap-6 bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm">
         <div className="flex items-center gap-5">
-           <div className="bg-indigo-50 p-4 rounded-2xl">
-             <Users className="w-8 h-8 text-indigo-600" />
-           </div>
-           <div>
-             <h2 className="text-2xl font-bold text-slate-800">Caregivers & Family</h2>
-             <p className="text-slate-500 font-medium mt-1">Manage who can access your health reports.</p>
-           </div>
+          <div className="bg-indigo-50 p-4 rounded-2xl">
+            <Users className="w-8 h-8 text-indigo-600" />
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold text-slate-800">Caregivers & Family</h2>
+            <p className="text-slate-500 font-medium mt-1">Manage who can access your health reports.</p>
+          </div>
         </div>
-        
+
         <button
           onClick={() => setShowAddForm(true)}
           className="bg-slate-900 text-white px-6 py-3 rounded-xl font-bold hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 flex items-center gap-2"
@@ -75,34 +74,34 @@ const CaregiversPage: React.FC = () => {
             <UserPlus className="w-5 h-5 text-teal-600" />
             New Caregiver Details
           </h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div>
               <label className="block text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Full Name</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={formData.name}
-                onChange={e => setFormData({...formData, name: e.target.value})}
+                onChange={e => setFormData({ ...formData, name: e.target.value })}
                 className="w-full p-3 rounded-xl border border-slate-200 font-medium focus:ring-2 focus:ring-teal-500 outline-none"
                 placeholder="e.g. Sarah Smith"
               />
             </div>
             <div>
               <label className="block text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Relationship</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={formData.relation}
-                onChange={e => setFormData({...formData, relation: e.target.value})}
+                onChange={e => setFormData({ ...formData, relation: e.target.value })}
                 className="w-full p-3 rounded-xl border border-slate-200 font-medium focus:ring-2 focus:ring-teal-500 outline-none"
                 placeholder="e.g. Daughter"
               />
             </div>
             <div>
               <label className="block text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Email / Contact</label>
-              <input 
-                type="email" 
+              <input
+                type="email"
                 value={formData.email}
-                onChange={e => setFormData({...formData, email: e.target.value})}
+                onChange={e => setFormData({ ...formData, email: e.target.value })}
                 className="w-full p-3 rounded-xl border border-slate-200 font-medium focus:ring-2 focus:ring-teal-500 outline-none"
                 placeholder="sarah@example.com"
               />
@@ -110,13 +109,13 @@ const CaregiversPage: React.FC = () => {
           </div>
 
           <div className="flex gap-4">
-            <button 
+            <button
               onClick={handleSave}
               className="px-8 py-3 bg-teal-600 text-white rounded-xl font-bold hover:bg-teal-700 transition-colors shadow-md shadow-teal-200"
             >
               Save Caregiver
             </button>
-            <button 
+            <button
               onClick={() => setShowAddForm(false)}
               className="px-8 py-3 text-slate-500 font-bold hover:bg-slate-200 rounded-xl transition-colors"
             >
@@ -129,10 +128,10 @@ const CaregiversPage: React.FC = () => {
       {/* List */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {caregivers.length === 0 && !showAddForm && (
-           <div className="col-span-full py-20 text-center border-2 border-dashed border-slate-100 rounded-[32px] bg-white">
-              <Users className="w-16 h-16 text-slate-200 mx-auto mb-4" />
-              <p className="text-slate-400 font-medium">No caregivers added yet.</p>
-           </div>
+          <div className="col-span-full py-20 text-center border-2 border-dashed border-slate-100 rounded-[32px] bg-white">
+            <Users className="w-16 h-16 text-slate-200 mx-auto mb-4" />
+            <p className="text-slate-400 font-medium">No caregivers added yet.</p>
+          </div>
         )}
 
         {caregivers.map(cg => (
@@ -153,7 +152,7 @@ const CaregiversPage: React.FC = () => {
                   </p>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={() => handleDelete(cg.id)}
                 className="p-2 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all"
               >

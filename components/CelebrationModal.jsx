@@ -1,11 +1,6 @@
-
+﻿
 import React, { useEffect, useState } from 'react';
 import { PartyPopper, X, Star, Heart, Sparkles, Trophy } from 'lucide-react';
-
-interface CelebrationModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
 
 const MOTIVATIONAL_QUOTES = [
   "You're taking great care of yourself! Keep it up!",
@@ -16,7 +11,7 @@ const MOTIVATIONAL_QUOTES = [
   "Your future self will thank you for this dedication."
 ];
 
-const CelebrationModal: React.FC<CelebrationModalProps> = ({ isOpen, onClose }) => {
+const CelebrationModal = ({ isOpen, onClose }) => {
   const [quote, setQuote] = useState('');
 
   useEffect(() => {
@@ -31,7 +26,7 @@ const CelebrationModal: React.FC<CelebrationModalProps> = ({ isOpen, onClose }) 
   return (
     <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
       {/* Backdrop with Blur */}
-      <div 
+      <div
         className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm animate-fade-in"
         onClick={onClose}
       />
@@ -67,7 +62,7 @@ const CelebrationModal: React.FC<CelebrationModalProps> = ({ isOpen, onClose }) 
         <div className="absolute -top-10 -right-10 w-32 h-32 bg-yellow-100 rounded-full blur-3xl opacity-50" />
         <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-indigo-100 rounded-full blur-3xl opacity-50" />
 
-        <button 
+        <button
           onClick={onClose}
           className="absolute top-4 right-4 p-2 rounded-full bg-slate-50 text-slate-400 hover:bg-slate-100 transition-colors z-10"
         >
@@ -79,7 +74,7 @@ const CelebrationModal: React.FC<CelebrationModalProps> = ({ isOpen, onClose }) 
           <div className="mb-6 relative">
             <div className="absolute inset-0 bg-yellow-200 blur-xl opacity-50 rounded-full animate-pulse"></div>
             <div className="bg-gradient-to-tr from-yellow-400 to-orange-400 p-5 rounded-full shadow-lg shadow-orange-200 rotate-12 transform hover:rotate-0 transition-transform duration-500">
-               <Trophy className="w-10 h-10 text-white" />
+              <Trophy className="w-10 h-10 text-white" />
             </div>
             {/* Floating Icons */}
             <Star className="absolute -top-2 -right-4 w-6 h-6 text-yellow-400 fill-yellow-400 animate-bounce delay-100" />
@@ -100,7 +95,7 @@ const CelebrationModal: React.FC<CelebrationModalProps> = ({ isOpen, onClose }) 
             </p>
           </div>
 
-          <button 
+          <button
             onClick={onClose}
             className="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold text-lg hover:bg-slate-800 hover:scale-[1.02] transition-all shadow-xl shadow-slate-200"
           >

@@ -1,17 +1,11 @@
-
+﻿
 import React, { useState } from 'react';
-import { Medication, TimeOfDay } from '../types';
+import { TimeOfDay } from '../types.js';
 import { X, Save, Clock, Pill, Camera } from 'lucide-react';
 
-interface AddMedicationModalProps {
-  onSave: (med: Medication) => void;
-  onClose: () => void;
-  onScanClick: () => void;
-}
-
-const AddMedicationModal: React.FC<AddMedicationModalProps> = ({ onSave, onClose, onScanClick }) => {
-  const [step, setStep] = useState<'method' | 'form'>('method');
-  const [formData, setFormData] = useState<Partial<Medication>>({
+const AddMedicationModal = ({ onSave, onClose, onScanClick }) => {
+  const [step, setStep] = useState('method');
+  const [formData, setFormData] = useState({
     name: '',
     dosage: '',
     frequency: 'Daily',
@@ -19,11 +13,11 @@ const AddMedicationModal: React.FC<AddMedicationModalProps> = ({ onSave, onClose
     times: [TimeOfDay.MORNING]
   });
 
-  const handleChange = (field: keyof Medication, value: any) => {
+  const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const toggleTime = (time: TimeOfDay) => {
+  const toggleTime = (time) => {
     setFormData(prev => {
       const currentTimes = prev.times || [];
       const times = currentTimes.includes(time)
@@ -36,7 +30,7 @@ const AddMedicationModal: React.FC<AddMedicationModalProps> = ({ onSave, onClose
   const handleSave = () => {
     if (!formData.name || !formData.dosage) return;
 
-    const newMed: Medication = {
+    const newMed = {
       id: `manual-${Date.now()}`,
       name: formData.name,
       dosage: formData.dosage,
@@ -59,12 +53,12 @@ const AddMedicationModal: React.FC<AddMedicationModalProps> = ({ onSave, onClose
           <button onClick={onClose} className="absolute top-4 right-4 p-2 hover:bg-slate-100 rounded-full text-slate-400">
             <X className="w-5 h-5" />
           </button>
-          
+
           <h3 className="text-2xl font-bold text-slate-800 mb-2">Add Medication</h3>
           <p className="text-slate-500 mb-8">How would you like to add this medicine?</p>
 
           <div className="space-y-4">
-            <button 
+            <button
               onClick={onScanClick}
               className="w-full bg-gradient-to-r from-indigo-500 to-blue-600 text-white p-5 rounded-2xl flex items-center gap-4 hover:scale-[1.02] transition-transform shadow-lg shadow-indigo-200"
             >
@@ -77,7 +71,7 @@ const AddMedicationModal: React.FC<AddMedicationModalProps> = ({ onSave, onClose
               </div>
             </button>
 
-            <button 
+            <button
               onClick={() => setStep('form')}
               className="w-full bg-white border border-slate-200 text-slate-700 p-5 rounded-2xl flex items-center gap-4 hover:bg-slate-50 transition-colors"
             >
@@ -108,8 +102,8 @@ const AddMedicationModal: React.FC<AddMedicationModalProps> = ({ onSave, onClose
         <div className="p-6 overflow-y-auto space-y-5">
           <div>
             <label className="block text-xs font-bold text-slate-500 uppercase mb-1.5">Medication Name</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               value={formData.name}
               onChange={(e) => handleChange('name', e.target.value)}
               placeholder="e.g. Paracetamol"
@@ -120,8 +114,8 @@ const AddMedicationModal: React.FC<AddMedicationModalProps> = ({ onSave, onClose
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-bold text-slate-500 uppercase mb-1.5">Dosage</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={formData.dosage}
                 onChange={(e) => handleChange('dosage', e.target.value)}
                 placeholder="e.g. 500mg"
@@ -130,8 +124,8 @@ const AddMedicationModal: React.FC<AddMedicationModalProps> = ({ onSave, onClose
             </div>
             <div>
               <label className="block text-xs font-bold text-slate-500 uppercase mb-1.5">Frequency</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={formData.frequency}
                 onChange={(e) => handleChange('frequency', e.target.value)}
                 placeholder="e.g. Daily"
@@ -151,8 +145,8 @@ const AddMedicationModal: React.FC<AddMedicationModalProps> = ({ onSave, onClose
                     onClick={() => toggleTime(time)}
                     className={`
                       flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-bold border transition-all
-                      ${isSelected 
-                        ? 'bg-teal-50 border-teal-200 text-teal-700' 
+                      ${isSelected
+                        ? 'bg-teal-50 border-teal-200 text-teal-700'
                         : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
                       }
                     `}
@@ -164,17 +158,17 @@ const AddMedicationModal: React.FC<AddMedicationModalProps> = ({ onSave, onClose
               })}
             </div>
           </div>
-          
-           <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase mb-1.5">Instructions</label>
-              <textarea 
-                value={formData.instructions}
-                onChange={(e) => handleChange('instructions', e.target.value)}
-                rows={2}
-                placeholder="e.g. Take after food"
-                className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-teal-500 outline-none resize-none"
-              />
-            </div>
+
+          <div>
+            <label className="block text-xs font-bold text-slate-500 uppercase mb-1.5">Instructions</label>
+            <textarea
+              value={formData.instructions}
+              onChange={(e) => handleChange('instructions', e.target.value)}
+              rows={2}
+              placeholder="e.g. Take after food"
+              className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-teal-500 outline-none resize-none"
+            />
+          </div>
         </div>
 
         <div className="p-4 border-t border-slate-100 bg-slate-50 flex gap-3 shrink-0">

@@ -1,20 +1,14 @@
-
+﻿
 import React, { useState, useEffect } from 'react';
-import { Caregiver } from '../types';
 import { getCaregivers, generateReportLink } from '../services/storageService';
 import { X, Share2, Calendar, Check, Copy, Link, ShieldCheck, Mail } from 'lucide-react';
 
-interface ShareReportModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-const ShareReportModal: React.FC<ShareReportModalProps> = ({ isOpen, onClose }) => {
-  const [caregivers, setCaregivers] = useState<Caregiver[]>([]);
-  const [selectedCgId, setSelectedCgId] = useState<string>('');
-  const [range, setRange] = useState<number>(7);
+const ShareReportModal = ({ isOpen, onClose }) => {
+  const [caregivers, setCaregivers] = useState([]);
+  const [selectedCgId, setSelectedCgId] = useState('');
+  const [range, setRange] = useState(7);
   const [isLoading, setIsLoading] = useState(false);
-  const [result, setResult] = useState<{ url: string; expires: string } | null>(null);
+  const [result, setResult] = useState(null);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -52,12 +46,12 @@ const ShareReportModal: React.FC<ShareReportModalProps> = ({ isOpen, onClose }) 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
       <div className="bg-white rounded-[32px] w-full max-w-lg shadow-2xl overflow-hidden animate-slide-up flex flex-col">
-        
+
         {/* Header */}
         <div className="bg-slate-50 px-8 py-6 border-b border-slate-100 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="bg-indigo-100 p-2 rounded-xl">
-               <Share2 className="w-5 h-5 text-indigo-600" />
+              <Share2 className="w-5 h-5 text-indigo-600" />
             </div>
             <h3 className="font-bold text-xl text-slate-800">Share Health Report</h3>
           </div>
@@ -78,7 +72,7 @@ const ShareReportModal: React.FC<ShareReportModalProps> = ({ isOpen, onClose }) 
                 <>
                   <div>
                     <label className="block text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Share with</label>
-                    <select 
+                    <select
                       value={selectedCgId}
                       onChange={(e) => setSelectedCgId(e.target.value)}
                       className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 appearance-none"
@@ -92,13 +86,13 @@ const ShareReportModal: React.FC<ShareReportModalProps> = ({ isOpen, onClose }) 
                   <div>
                     <label className="block text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Data Range</label>
                     <div className="grid grid-cols-2 gap-3">
-                      <button 
+                      <button
                         onClick={() => setRange(7)}
                         className={`p-3 rounded-xl border font-bold text-sm transition-all ${range === 7 ? 'bg-indigo-50 border-indigo-200 text-indigo-700' : 'border-slate-200 text-slate-500'}`}
                       >
                         Last 7 Days
                       </button>
-                      <button 
+                      <button
                         onClick={() => setRange(30)}
                         className={`p-3 rounded-xl border font-bold text-sm transition-all ${range === 30 ? 'bg-indigo-50 border-indigo-200 text-indigo-700' : 'border-slate-200 text-slate-500'}`}
                       >
@@ -114,7 +108,7 @@ const ShareReportModal: React.FC<ShareReportModalProps> = ({ isOpen, onClose }) 
                     </p>
                   </div>
 
-                  <button 
+                  <button
                     onClick={handleGenerate}
                     disabled={isLoading}
                     className="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
@@ -136,13 +130,13 @@ const ShareReportModal: React.FC<ShareReportModalProps> = ({ isOpen, onClose }) 
                 <div className="bg-white p-2 rounded-lg border border-slate-100">
                   <Link className="w-4 h-4 text-slate-400" />
                 </div>
-                <input 
-                  type="text" 
-                  readOnly 
-                  value={result.url} 
+                <input
+                  type="text"
+                  readOnly
+                  value={result.url}
                   className="bg-transparent border-none outline-none text-sm font-medium text-slate-600 w-full truncate"
                 />
-                <button 
+                <button
                   onClick={copyToClipboard}
                   className="text-indigo-600 font-bold text-xs hover:bg-indigo-50 p-2 rounded-lg transition-colors"
                 >
@@ -155,15 +149,15 @@ const ShareReportModal: React.FC<ShareReportModalProps> = ({ isOpen, onClose }) 
               </div>
 
               <div className="pt-4 border-t border-slate-100">
-                 <p className="text-xs text-slate-400 italic mb-4">
-                   (In the real app, this would also be emailed automatically to the selected caregiver.)
-                 </p>
-                 <button 
-                   onClick={onClose}
-                   className="w-full py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-100 transition-colors"
-                 >
-                   Done
-                 </button>
+                <p className="text-xs text-slate-400 italic mb-4">
+                  (In the real app, this would also be emailed automatically to the selected caregiver.)
+                </p>
+                <button
+                  onClick={onClose}
+                  className="w-full py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-100 transition-colors"
+                >
+                  Done
+                </button>
               </div>
             </div>
           )}

@@ -1,23 +1,15 @@
-
+﻿
 import React, { useState } from 'react';
-import { DoseEvent, TimeOfDay, Medication } from '../types';
+import { TimeOfDay } from '../types.js';
 import { Check, Clock, Moon, Sun, Sunset, Coffee, ChevronDown, ChevronUp, ShieldCheck, Pencil, PartyPopper } from 'lucide-react';
 
-interface TimelineProps {
-  doses: DoseEvent[];
-  medications: Medication[];
-  onToggleStatus: (id: string) => void;
-  onEdit: (medication: Medication) => void;
-  onCelebration: () => void;
-}
-
-const Timeline: React.FC<TimelineProps> = ({ doses, medications, onToggleStatus, onEdit, onCelebration }) => {
-  const [expandedDoseId, setExpandedDoseId] = useState<string | null>(null);
+const Timeline = ({ doses, medications, onToggleStatus, onEdit, onCelebration }) => {
+  const [expandedDoseId, setExpandedDoseId] = useState(null);
 
   // Sort and group doses by time
   const sortedDoses = [...doses].sort((a, b) => a.time.localeCompare(b.time));
-  const groupedByTime = new Map<string, DoseEvent[]>();
-  
+  const groupedByTime = new Map();
+
   sortedDoses.forEach(dose => {
     const timeKey = dose.time;
     const existing = groupedByTime.get(timeKey) || [];
@@ -27,8 +19,8 @@ const Timeline: React.FC<TimelineProps> = ({ doses, medications, onToggleStatus,
   const timeGroups = Array.from(groupedByTime.entries());
   const allComplete = sortedDoses.length > 0 && sortedDoses.every(d => d.status === 'taken');
 
-  const getTimeIcon = (label: TimeOfDay) => {
-    switch(label) {
+  const getTimeIcon = (label) => {
+    switch (label) {
       case TimeOfDay.MORNING: return <Coffee className="w-4 h-4" />;
       case TimeOfDay.AFTERNOON: return <Sun className="w-4 h-4" />;
       case TimeOfDay.EVENING: return <Sunset className="w-4 h-4" />;
@@ -37,9 +29,9 @@ const Timeline: React.FC<TimelineProps> = ({ doses, medications, onToggleStatus,
     }
   };
 
-  const getMedicationDetails = (medId: string) => medications.find(m => m.id === medId);
+  const getMedicationDetails = (medId) => medications.find(m => m.id === medId);
 
-  const getColorTheme = (colorClass?: string) => {
+  const getColorTheme = (colorClass) => {
     const defaultColor = 'indigo';
     const color = colorClass ? colorClass.replace('bg-', '').replace('-500', '') : defaultColor;
     return {
@@ -56,7 +48,7 @@ const Timeline: React.FC<TimelineProps> = ({ doses, medications, onToggleStatus,
     };
   };
 
-  const toggleExpand = (id: string) => setExpandedDoseId(expandedDoseId === id ? null : id);
+  const toggleExpand = (id) => setExpandedDoseId(expandedDoseId === id ? null : id);
 
   if (doses.length === 0) {
     return (
@@ -82,15 +74,15 @@ const Timeline: React.FC<TimelineProps> = ({ doses, medications, onToggleStatus,
 
           return (
             <div key={time} className="flex flex-col sm:flex-row gap-6 sm:gap-10">
-              
+
               {/* Time Column */}
               <div className="flex-shrink-0">
                 <div className={`
                    sticky top-24 z-20 flex items-center gap-2 px-5 py-2.5 rounded-full shadow-lg transition-all transform w-fit
-                   ${isSlotComplete 
-                     ? 'bg-slate-100 text-slate-400 opacity-80 border border-slate-200' 
-                     : 'bg-gradient-to-r from-slate-900 to-slate-800 text-white shadow-slate-900/20 scale-105 ring-4 ring-white/30'
-                   }
+                   ${isSlotComplete
+                    ? 'bg-slate-100 text-slate-400 opacity-80 border border-slate-200'
+                    : 'bg-gradient-to-r from-slate-900 to-slate-800 text-white shadow-slate-900/20 scale-105 ring-4 ring-white/30'
+                  }
                 `}>
                   <span className="font-bold text-xl tracking-tight">{time}</span>
                   <div className={`w-px h-4 ${isSlotComplete ? 'bg-slate-300' : 'bg-white/20'}`}></div>
@@ -109,7 +101,7 @@ const Timeline: React.FC<TimelineProps> = ({ doses, medications, onToggleStatus,
                   const isExpanded = expandedDoseId === dose.id;
 
                   return (
-                    <div 
+                    <div
                       key={dose.id}
                       className={`
                         relative rounded-[24px] overflow-hidden transition-all duration-300 border backdrop-blur-md
@@ -132,7 +124,7 @@ const Timeline: React.FC<TimelineProps> = ({ doses, medications, onToggleStatus,
                               {dose.dosage}
                             </p>
                           </div>
-                          
+
                           {/* Check Button */}
                           <button
                             onClick={() => onToggleStatus(dose.id)}
@@ -155,40 +147,40 @@ const Timeline: React.FC<TimelineProps> = ({ doses, medications, onToggleStatus,
 
                         {/* Actions Row */}
                         <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-100/50">
-                           {!isCompleted && medDetails && (
-                             <button
-                               onClick={(e) => { e.stopPropagation(); onEdit(medDetails); }}
-                               className="text-slate-400 hover:text-slate-600 transition-all duration-200 p-1.5 hover:bg-slate-100 rounded-lg hover:scale-110 active:scale-95"
-                               title="Edit Dose"
-                             >
-                               <Pencil className="w-3.5 h-3.5" />
-                             </button>
-                           )}
-                           
-                           {medDetails?.generalUse && (
-                             <button 
-                               onClick={() => toggleExpand(dose.id)}
-                               className={`flex items-center gap-1.5 text-xs font-bold transition-colors ${theme.textMedium} hover:opacity-80 ml-auto bg-slate-50/80 px-3 py-1.5 rounded-lg hover:bg-slate-100`}
-                             >
-                               <span>What is this for?</span>
-                               {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                             </button>
-                           )}
+                          {!isCompleted && medDetails && (
+                            <button
+                              onClick={(e) => { e.stopPropagation(); onEdit(medDetails); }}
+                              className="text-slate-400 hover:text-slate-600 transition-all duration-200 p-1.5 hover:bg-slate-100 rounded-lg hover:scale-110 active:scale-95"
+                              title="Edit Dose"
+                            >
+                              <Pencil className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+
+                          {medDetails?.generalUse && (
+                            <button
+                              onClick={() => toggleExpand(dose.id)}
+                              className={`flex items-center gap-1.5 text-xs font-bold transition-colors ${theme.textMedium} hover:opacity-80 ml-auto bg-slate-50/80 px-3 py-1.5 rounded-lg hover:bg-slate-100`}
+                            >
+                              <span>What is this for?</span>
+                              {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                            </button>
+                          )}
                         </div>
                       </div>
 
                       {/* Expanded Info */}
                       <div className={`transition-all duration-300 ease-in-out bg-slate-50/50 overflow-hidden ${isExpanded ? 'max-h-60' : 'max-h-0'}`}>
-                         <div className="p-5 pt-2 pl-7 text-sm text-slate-600 leading-relaxed border-t border-slate-100/50">
-                           <div className={`inline-block px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide mb-2 bg-white border ${theme.border} ${theme.textMedium}`}>
-                              {medDetails?.category || 'General'}
-                           </div>
-                           <p className="mb-3 font-medium">{medDetails?.generalUse}</p>
-                           <div className="flex items-start gap-2 text-[11px] font-bold text-amber-700 bg-amber-50 p-2.5 rounded-xl border border-amber-100/50">
-                             <ShieldCheck className="w-4 h-4 text-amber-500 shrink-0" />
-                             <span className="leading-snug">General information only. Follow your doctor's instructions.</span>
-                           </div>
-                         </div>
+                        <div className="p-5 pt-2 pl-7 text-sm text-slate-600 leading-relaxed border-t border-slate-100/50">
+                          <div className={`inline-block px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide mb-2 bg-white border ${theme.border} ${theme.textMedium}`}>
+                            {medDetails?.category || 'General'}
+                          </div>
+                          <p className="mb-3 font-medium">{medDetails?.generalUse}</p>
+                          <div className="flex items-start gap-2 text-[11px] font-bold text-amber-700 bg-amber-50 p-2.5 rounded-xl border border-amber-100/50">
+                            <ShieldCheck className="w-4 h-4 text-amber-500 shrink-0" />
+                            <span className="leading-snug">General information only. Follow your doctor's instructions.</span>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   );
@@ -203,16 +195,16 @@ const Timeline: React.FC<TimelineProps> = ({ doses, medications, onToggleStatus,
       {allComplete && (
         <div className="mt-20 flex flex-col items-center animate-slide-up pb-8">
           <div className="relative group cursor-pointer" onClick={onCelebration}>
-             <div className="absolute inset-0 bg-yellow-400 rounded-[32px] blur-xl opacity-40 group-hover:opacity-60 transition-opacity animate-pulse"></div>
-             <button 
-               className="relative bg-gradient-to-tr from-slate-900 to-slate-800 text-white px-12 py-6 rounded-[32px] font-bold text-2xl shadow-2xl flex items-center gap-4 border border-white/10 group-hover:scale-105 transition-transform"
-             >
-               <PartyPopper className="w-8 h-8 text-yellow-400 group-hover:rotate-12 transition-transform" />
-               <span>All Done!</span>
-             </button>
-             <div className="absolute -top-3 -right-3 bg-white text-slate-900 text-xs font-black px-3 py-1.5 rounded-full shadow-lg border-2 border-yellow-400 rotate-12">
-               100%
-             </div>
+            <div className="absolute inset-0 bg-yellow-400 rounded-[32px] blur-xl opacity-40 group-hover:opacity-60 transition-opacity animate-pulse"></div>
+            <button
+              className="relative bg-gradient-to-tr from-slate-900 to-slate-800 text-white px-12 py-6 rounded-[32px] font-bold text-2xl shadow-2xl flex items-center gap-4 border border-white/10 group-hover:scale-105 transition-transform"
+            >
+              <PartyPopper className="w-8 h-8 text-yellow-400 group-hover:rotate-12 transition-transform" />
+              <span>All Done!</span>
+            </button>
+            <div className="absolute -top-3 -right-3 bg-white text-slate-900 text-xs font-black px-3 py-1.5 rounded-full shadow-lg border-2 border-yellow-400 rotate-12">
+              100%
+            </div>
           </div>
           <p className="mt-6 text-slate-500 font-bold text-sm tracking-wide uppercase opacity-70">Great job keeping up with your health!</p>
         </div>
@@ -222,3 +214,4 @@ const Timeline: React.FC<TimelineProps> = ({ doses, medications, onToggleStatus,
 };
 
 export default Timeline;
+

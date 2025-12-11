@@ -1,15 +1,10 @@
-import React, { useState } from 'react';
-import { Medication } from '../types';
+﻿import React, { useState } from 'react';
 import { Pill, ChevronDown, ChevronUp, Info, ShieldCheck } from 'lucide-react';
 
-interface MedicationListProps {
-  medications: Medication[];
-}
+const MedicationList = ({ medications }) => {
+  const [expandedId, setExpandedId] = useState(null);
 
-const MedicationList: React.FC<MedicationListProps> = ({ medications }) => {
-  const [expandedId, setExpandedId] = useState<string | null>(null);
-
-  const toggleExpand = (id: string) => {
+  const toggleExpand = (id) => {
     setExpandedId(expandedId === id ? null : id);
   };
 
@@ -19,11 +14,11 @@ const MedicationList: React.FC<MedicationListProps> = ({ medications }) => {
     <div className="bg-white/60 backdrop-blur-2xl rounded-[32px] p-8 border border-white/50 shadow-xl shadow-slate-200/50">
       <div className="flex items-center gap-3 mb-6">
         <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 p-2.5 rounded-xl shadow-lg shadow-indigo-500/20">
-           <Pill className="w-6 h-6 text-white" />
+          <Pill className="w-6 h-6 text-white" />
         </div>
         <h3 className="text-xl font-bold text-slate-800">Your Medications</h3>
       </div>
-      
+
       <div className="space-y-4">
         {medications.map((med) => {
           const isExpanded = expandedId === med.id;
@@ -31,12 +26,12 @@ const MedicationList: React.FC<MedicationListProps> = ({ medications }) => {
           const themeColor = colorClass.replace('bg-', '').replace('-500', '');
 
           return (
-            <div 
-              key={med.id} 
+            <div
+              key={med.id}
               className={`
                 relative overflow-hidden rounded-[24px] transition-all duration-300 border
-                ${isExpanded 
-                  ? 'bg-white border-white shadow-lg ring-1 ring-slate-100 scale-[1.01]' 
+                ${isExpanded
+                  ? 'bg-white border-white shadow-lg ring-1 ring-slate-100 scale-[1.01]'
                   : 'bg-white/80 border-transparent hover:bg-white hover:shadow-md'
                 }
               `}
@@ -55,9 +50,9 @@ const MedicationList: React.FC<MedicationListProps> = ({ medications }) => {
                         </span>
                       )}
                     </div>
-                    <p className="text-slate-500 font-medium text-sm">{med.dosage} • {med.frequency}</p>
+                    <p className="text-slate-500 font-medium text-sm">{med.dosage} â€¢ {med.frequency}</p>
                   </div>
-                  
+
                   {/* Time Badges */}
                   <div className="flex flex-wrap gap-1 max-w-[120px] justify-end">
                     {med.times.map(t => (
@@ -69,12 +64,12 @@ const MedicationList: React.FC<MedicationListProps> = ({ medications }) => {
                 </div>
 
                 {/* Accordion Trigger */}
-                <button 
+                <button
                   onClick={() => toggleExpand(med.id)}
                   className={`
                     w-full mt-2 flex items-center justify-between px-4 py-2.5 rounded-xl text-xs font-bold transition-all
-                    ${isExpanded 
-                      ? 'bg-slate-50 text-slate-600' 
+                    ${isExpanded
+                      ? 'bg-slate-50 text-slate-600'
                       : 'bg-transparent text-slate-400 hover:bg-slate-50 hover:text-slate-600'
                     }
                   `}
@@ -99,7 +94,7 @@ const MedicationList: React.FC<MedicationListProps> = ({ medications }) => {
                         <span className={`font-bold text-${themeColor}-700 block mb-1`}>General Usage:</span>
                         {med.generalUse}
                       </p>
-                      
+
                       <div className="flex items-start gap-2 p-3 bg-amber-50 text-amber-900 rounded-xl border border-amber-100">
                         <ShieldCheck className="w-4 h-4 mt-0.5 shrink-0 text-amber-600" />
                         <p className="text-xs leading-normal opacity-90 font-medium">

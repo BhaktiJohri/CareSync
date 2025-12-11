@@ -1,19 +1,13 @@
-
+﻿
 import React, { useState, useRef, useEffect } from 'react';
-import { ChatMessage, Medication, VitalRecord } from '../types';
-import { chatWithAssistant } from '../services/geminiService';
+import { chatWithAssistant } from '../services/geminiService.js';
 import { MessageCircle, X, Send, Bot, Sparkles } from 'lucide-react';
 
-interface ChatAssistantProps {
-  medications: Medication[];
-  vitals?: VitalRecord[];
-}
-
-const ChatAssistant: React.FC<ChatAssistantProps> = ({ medications, vitals = [] }) => {
+const ChatAssistant = ({ medications, vitals = [] }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [messages, setMessages] = useState<ChatMessage[]>([
+  const [messages, setMessages] = useState([
     {
       id: 'welcome',
       role: 'model',
@@ -21,8 +15,8 @@ const ChatAssistant: React.FC<ChatAssistantProps> = ({ medications, vitals = [] 
       timestamp: new Date()
     }
   ]);
-  
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -35,7 +29,7 @@ const ChatAssistant: React.FC<ChatAssistantProps> = ({ medications, vitals = [] 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
 
-    const userMsg: ChatMessage = {
+    const userMsg = {
       id: Date.now().toString(),
       role: 'user',
       text: input,
@@ -53,8 +47,8 @@ const ChatAssistant: React.FC<ChatAssistantProps> = ({ medications, vitals = [] 
       }));
 
       const responseText = await chatWithAssistant(userMsg.text, medications, vitals, history);
-      
-      const aiMsg: ChatMessage = {
+
+      const aiMsg = {
         id: (Date.now() + 1).toString(),
         role: 'model',
         text: responseText || "I'm having trouble thinking right now.",
@@ -78,9 +72,8 @@ const ChatAssistant: React.FC<ChatAssistantProps> = ({ medications, vitals = [] 
       {/* Floating Action Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`fixed bottom-8 right-8 p-4 rounded-full shadow-2xl transition-all duration-300 z-50 hover:scale-110 active:scale-95 ${
-          isOpen ? 'bg-slate-800 rotate-90' : 'bg-gradient-to-r from-teal-500 to-emerald-500'
-        }`}
+        className={`fixed bottom-8 right-8 p-4 rounded-full shadow-2xl transition-all duration-300 z-50 hover:scale-110 active:scale-95 ${isOpen ? 'bg-slate-800 rotate-90' : 'bg-gradient-to-r from-teal-500 to-emerald-500'
+          }`}
       >
         {isOpen ? <X className="text-white w-7 h-7" /> : <MessageCircle className="text-white w-7 h-7" />}
       </button>
@@ -88,14 +81,14 @@ const ChatAssistant: React.FC<ChatAssistantProps> = ({ medications, vitals = [] 
       {/* Glassmorphic Chat Window */}
       {isOpen && (
         <div className="fixed bottom-28 right-8 w-[90vw] md:w-[400px] h-[600px] bg-white/95 backdrop-blur-xl rounded-[32px] shadow-2xl flex flex-col z-50 border border-white/20 overflow-hidden animate-slide-up ring-1 ring-slate-900/5">
-          
+
           {/* Header */}
           <div className="bg-gradient-to-r from-slate-900 to-slate-800 p-6 flex items-center gap-4">
             <div className="relative">
-               <div className="bg-gradient-to-tr from-teal-400 to-emerald-400 p-2 rounded-xl">
-                 <Bot className="text-white w-6 h-6" />
-               </div>
-               <div className="absolute -bottom-1 -right-1 bg-green-500 w-3 h-3 rounded-full border-2 border-slate-900"></div>
+              <div className="bg-gradient-to-tr from-teal-400 to-emerald-400 p-2 rounded-xl">
+                <Bot className="text-white w-6 h-6" />
+              </div>
+              <div className="absolute -bottom-1 -right-1 bg-green-500 w-3 h-3 rounded-full border-2 border-slate-900"></div>
             </div>
             <div>
               <h3 className="text-white font-bold text-lg">Care Assistant</h3>
@@ -114,11 +107,10 @@ const ChatAssistant: React.FC<ChatAssistantProps> = ({ medications, vitals = [] 
                 className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[85%] p-4 rounded-2xl text-sm leading-relaxed shadow-sm ${
-                    msg.role === 'user'
+                  className={`max-w-[85%] p-4 rounded-2xl text-sm leading-relaxed shadow-sm ${msg.role === 'user'
                       ? 'bg-teal-600 text-white rounded-br-sm'
                       : 'bg-white text-slate-700 border border-slate-100 rounded-bl-sm'
-                  }`}
+                    }`}
                 >
                   {msg.text}
                 </div>
