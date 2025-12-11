@@ -30,24 +30,100 @@
             }
           },
           animation: {
-            'fade-in': 'fadeIn 0.5s ease-out',
-            'slide-up': 'slideUp 0.5s ease-out',
-            'pulse-slow': 'pulse 3s infinite',
+            'slideInLeft': 'slideInLeft 1.2s cubic-bezier(0.16, 1, 0.3, 1)',
+            'slideInRight': 'slideInRight 1.2s cubic-bezier(0.16, 1, 0.3, 1)',
+            'fadeInUp': 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+            'slideIn': 'slideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            'shimmer': 'shimmer 2s linear infinite',
+            'bigBounce': 'bigBounce 2s ease-in-out infinite',
+            'float': 'float 3s ease-in-out infinite',
           },
           keyframes: {
-            fadeIn: {
-              '0%': { opacity: '0' },
-              '100%': { opacity: '1' },
+            slideInLeft: {
+              '0%': { opacity: '0', transform: 'translateX(-100px)' },
+              '100%': { opacity: '1', transform: 'translateX(0)' },
             },
-            slideUp: {
-              '0%': { transform: 'translateY(20px)', opacity: '0' },
-              '100%': { transform: 'translateY(0)', opacity: '1' },
+            slideInRight: {
+              '0%': { opacity: '0', transform: 'translateX(100px)' },
+              '100%': { opacity: '1', transform: 'translateX(0)' },
+            },
+            fadeInUp: {
+              '0%': { opacity: '0', transform: 'translateY(50px) scale(0.9)' },
+              '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+            },
+            slideIn: {
+              '0%': { transform: 'scale(0.7)', opacity: '0' },
+              '50%': { transform: 'scale(1.05)' },
+              '100%': { transform: 'scale(1)', opacity: '1' },
+            },
+            shimmer: {
+              '0%': { backgroundPosition: '-200% center' },
+              '100%': { backgroundPosition: '200% center' },
+            },
+            bigBounce: {
+              '0%, 100%': { transform: 'translateY(0) scale(1)' },
+              '50%': { transform: 'translateY(-15px) scale(1.1)' },
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-20px)' },
             }
           }
         }
       }
     }
   </script>
+  <style>
+    @keyframes shimmer {
+      0% {
+        background-position: -200% center;
+      }
+
+      100% {
+        background-position: 200% center;
+      }
+    }
+
+    @keyframes bigBounce {
+
+      0%,
+      100% {
+        transform: translateY(0) scale(1);
+      }
+
+      50% {
+        transform: translateY(-15px) scale(1.1);
+      }
+    }
+
+    @keyframes slideInLeft {
+      0% {
+        opacity: 0;
+        transform: translateX(-100px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes slideInRight {
+      0% {
+        opacity: 0;
+        transform: translateX(100px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .bg-gradient-shimmer {
+      background-size: 200% auto;
+    }
+  </style>
   <script type="importmap">
 {
   "imports": {

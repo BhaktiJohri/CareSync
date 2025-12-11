@@ -1,9 +1,9 @@
 
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 import { analyzeVitalSign } from '../utils.js';
 
 // Initialize Gemini Client
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const genAI = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY || '' });
 
 /**
  * Helper to clean JSON string if Gemini wraps it in markdown
@@ -43,21 +43,19 @@ const getCategoryColor = (category = '') => {
 
 /**
  * Supercharged AI Function: Visual Prescription & Vitals Parser
- * Uses Gemini 2.5 Flash (Multimodal) to extract structured data from images.
+ * Uses Gemini 2.0 Flash (Multimodal) to extract structured data from images.
  * @param {string} base64Image
  * @returns {Promise<import('../types').ExtractionResult>}
  */
 export const parsePrescriptionImage = async (base64Image) => {
-    const modelId = "gemini-2.5-flash";
-
     const prompt = `
     You are an expert medical AI. Analyze this image of a prescription.
     
     1. Extract Medication Details:
     - Name, dosage, frequency, instructions, duration.
     - Infer 'times' array from frequency (e.g., "1-0-1" -> ["Morning", "Night"]).
-    - **New**: Provide a 'generalUse' summary (simple layman terms, e.g. "Commonly used to lower cholesterol").
-    - **New**: Provide 'category' (e.g. "Statin", "Antibiotic", "Pain reliever").
+    - Provide a 'generalUse' summary (simple layman terms, e.g. "Commonly used to lower cholesterol").
+    - Provide 'category' (e.g. "Statin", "Antibiotic", "Pain reliever").
     
     2. Extract Vitals / Observations if present:
     - Look for text like "BP: 120/80", "Sugar: 110", "Pulse: 72", "Weight: 70kg".
@@ -65,61 +63,47 @@ export const parsePrescriptionImage = async (base64Image) => {
     - If no unit is found, infer it based on type (e.g. mmHg for BP).
     
     If the name is handwritten and unclear, give your best guess but mark it.
+    
+    Return JSON in this exact format:
+    {
+      "medications": [
+        {
+          "name": "string",
+          "dosage": "string",
+          "frequency": "string",
+          "instructions": "string",
+          "duration": "string",
+          "times": ["Morning", "Afternoon", "Evening", "Night"],
+          "generalUse": "string",
+          "category": "string"
+        }
+      ],
+      "vitals": [
+        {
+          "type": "string",
+          "value": "string",
+          "unit": "string"
+        }
+      ]
+    }
   `;
 
     try {
-        const response = await ai.models.generateContent({
-            model: modelId,
+        const response = await genAI.models.generateContent({
+            model: "gemini-2.0-flash-exp",
             contents: {
                 parts: [
+                    { text: prompt },
                     {
                         inlineData: {
                             mimeType: "image/png",
                             data: base64Image
                         }
-                    },
-                    { text: prompt }
+                    }
                 ]
             },
             config: {
-                responseMimeType: "application/json",
-                responseSchema: {
-                    type: Type.OBJECT,
-                    properties: {
-                        medications: {
-                            type: Type.ARRAY,
-                            items: {
-                                type: Type.OBJECT,
-                                properties: {
-                                    name: { type: Type.STRING },
-                                    dosage: { type: Type.STRING },
-                                    frequency: { type: Type.STRING },
-                                    instructions: { type: Type.STRING },
-                                    duration: { type: Type.STRING },
-                                    times: {
-                                        type: Type.ARRAY,
-                                        items: { type: Type.STRING }
-                                    },
-                                    generalUse: { type: Type.STRING, description: "Simple explanation of what this drug treats" },
-                                    category: { type: Type.STRING, description: "Drug class or category" }
-                                },
-                                required: ["name", "dosage", "times"]
-                            }
-                        },
-                        vitals: {
-                            type: Type.ARRAY,
-                            items: {
-                                type: Type.OBJECT,
-                                properties: {
-                                    type: { type: Type.STRING, description: "Blood Pressure, Blood Sugar, Heart Rate, Weight, etc." },
-                                    value: { type: Type.STRING, description: "The numeric value or string like 120/80" },
-                                    unit: { type: Type.STRING, description: "The unit of measurement" }
-                                },
-                                required: ["type", "value"]
-                            }
-                        }
-                    }
-                }
+                responseMimeType: "application/json"
             }
         });
 
@@ -155,7 +139,7 @@ export const parsePrescriptionImage = async (base64Image) => {
         return { medications: [], vitals: [] };
     } catch (error) {
         console.error("Gemini Extraction Error:", error);
-        throw new Error("Failed to analyze prescription.");
+        throw new Error("Failed to analyze prescription. Make sure your API key is set correctly.");
     }
 };
 
@@ -166,7 +150,6 @@ export const parsePrescriptionImage = async (base64Image) => {
  * @returns {Promise<import('../types').SummaryReport>}
  */
 export const generateHealthReport = async (medications, vitals) => {
-    const modelId = "gemini-2.5-flash";
     const medListJson = JSON.stringify(medications);
     const vitalsJson = JSON.stringify(vitals);
 
@@ -179,28 +162,28 @@ export const generateHealthReport = async (medications, vitals) => {
     2. Identify riskFlags (e.g., "High BP detected - Check with doctor about salt intake").
     3. Write a caregiverNote.
     
+    Return JSON in this format:
+    {
+      "summary": "string",
+      "riskFlags": ["string"],
+      "caregiverNote": "string"
+    }
+    
     Disclaimer: You are not a doctor.
   `;
 
     try {
-        const response = await ai.models.generateContent({
-            model: modelId,
+        const response = await genAI.models.generateContent({
+            model: "gemini-2.0-flash-exp",
             contents: prompt,
             config: {
-                responseMimeType: "application/json",
-                responseSchema: {
-                    type: Type.OBJECT,
-                    properties: {
-                        summary: { type: Type.STRING },
-                        riskFlags: { type: Type.ARRAY, items: { type: Type.STRING } },
-                        caregiverNote: { type: Type.STRING }
-                    }
-                }
+                responseMimeType: "application/json"
             }
         });
 
         return JSON.parse(cleanJson(response.text || '{}'));
     } catch (e) {
+        console.error("Health report generation error:", e);
         return {
             summary: "Could not generate summary.",
             riskFlags: [],
@@ -223,8 +206,6 @@ export const chatWithAssistant = async (
     vitals,
     chatHistory
 ) => {
-    const modelId = "gemini-2.5-flash";
-
     const systemInstruction = `
     You are CareSync Assistant.
     User's Medications: ${JSON.stringify(medications)}
@@ -236,12 +217,21 @@ export const chatWithAssistant = async (
     3. Keep answers concise.
   `;
 
-    const chat = ai.chats.create({
-        model: modelId,
-        config: { systemInstruction },
-        history: chatHistory
-    });
+    try {
+        const history = chatHistory.map(msg => ({
+            role: msg.role === 'user' ? 'user' : 'model',
+            parts: [{ text: msg.content }]
+        }));
 
-    const result = await chat.sendMessage({ message });
-    return result.text;
+        const response = await genAI.chats.create({
+            model: "gemini-2.0-flash-exp",
+            config: { systemInstruction },
+            history: history
+        }).sendMessage({ message });
+
+        return response.text;
+    } catch (error) {
+        console.error("Chat error:", error);
+        return "I'm having trouble responding right now. Please try again.";
+    }
 };

@@ -15,9 +15,16 @@ import ShareReportModal from './components/ShareReportModal.jsx';
 import CelebrationModal from './components/CelebrationModal.jsx';
 import ProfilePage from './components/ProfilePage.jsx';
 import Logo from './components/Logo.jsx';
-import { Share2, Bell, AlertTriangle, LayoutDashboard, History, Users, Sparkles, UserCircle, Plus } from 'lucide-react';
+import LandingPage from './components/LandingPage.jsx';
+import AuthModal from './components/AuthModal.jsx';
+import { Share2, Bell, AlertTriangle, LayoutDashboard, History, Users, Sparkles, UserCircle, Plus, LogOut } from 'lucide-react';
 
 export default function App() {
+  // Authentication State
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
   const [activeTab, setActiveTab] = useState('dashboard');
 
   // Data State
@@ -34,6 +41,20 @@ export default function App() {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const [showAddMedication, setShowAddMedication] = useState(false);
+
+  // Check for existing session on mount
+  useEffect(() => {
+    const savedUser = localStorage.getItem('caresync_user');
+    if (savedUser) {
+      try {
+        const user = JSON.parse(savedUser);
+        setCurrentUser(user);
+        setIsAuthenticated(true);
+      } catch (e) {
+        console.error('Error loading user session', e);
+      }
+    }
+  }, []);
 
   // Load initial data from storage
   useEffect(() => {
@@ -180,6 +201,33 @@ export default function App() {
     setDoses(mergedDoses);
     setEditingMedication(null);
   };
+
+  const handleLogin = (user) => {
+    setCurrentUser(user);
+    setIsAuthenticated(true);
+    setShowAuthModal(false);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('caresync_user');
+    setCurrentUser(null);
+    setIsAuthenticated(false);
+    setActiveTab('dashboard');
+  };
+
+  // Show landing page if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <>
+        <LandingPage onLoginClick={() => setShowAuthModal(true)} />
+        <AuthModal
+          isOpen={showAuthModal}
+          onClose={() => setShowAuthModal(false)}
+          onLogin={handleLogin}
+        />
+      </>
+    );
+  }
 
   const renderContent = () => {
     switch (activeTab) {
@@ -423,22 +471,32 @@ export default function App() {
             <div className="w-px h-8 bg-slate-200 hidden md:block"></div>
 
             {userProfile && (
-              <button
-                onClick={() => setActiveTab('profile')}
-                className={`flex items-center gap-3 p-2 rounded-2xl transition-all ${activeTab === 'profile' ? 'bg-white shadow-md ring-1 ring-slate-100' : 'hover:bg-white/50'}`}
-              >
-                <div className="hidden md:flex flex-col items-end">
-                  <span className="text-sm font-bold text-slate-800">{userProfile.fullName}</span>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-teal-600 bg-teal-50 px-2 py-0.5 rounded-full">{userProfile.viewMode}</span>
-                </div>
-                {userProfile.avatarInitials ? (
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-indigo-200 border-2 border-white">
-                    {userProfile.avatarInitials}
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setActiveTab('profile')}
+                  className={`flex items-center gap-3 p-2 rounded-2xl transition-all ${activeTab === 'profile' ? 'bg-white shadow-md ring-1 ring-slate-100' : 'hover:bg-white/50'}`}
+                >
+                  <div className="hidden md:flex flex-col items-end">
+                    <span className="text-sm font-bold text-slate-800">{currentUser?.name || userProfile.fullName}</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-teal-600 bg-teal-50 px-2 py-0.5 rounded-full">{currentUser?.userType || userProfile.viewMode}</span>
                   </div>
-                ) : (
-                  <UserCircle className="w-10 h-10 text-slate-300" />
-                )}
-              </button>
+                  {userProfile.avatarInitials ? (
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-indigo-200 border-2 border-white">
+                      {userProfile.avatarInitials}
+                    </div>
+                  ) : (
+                    <UserCircle className="w-10 h-10 text-slate-300" />
+                  )}
+                </button>
+
+                <button
+                  onClick={handleLogout}
+                  className="p-2.5 rounded-xl text-slate-500 hover:bg-red-50 hover:text-red-600 transition-all"
+                  title="Logout"
+                >
+                  <LogOut className="w-5 h-5" />
+                </button>
+              </div>
             )}
           </div>
         </div>
