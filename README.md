@@ -6,7 +6,7 @@
 
 This contains everything you need to run your app locally.
 
-View your app in AI Studio: https://ai.studio/apps/drive/11QufnAH91kZ-DTPJKc4Zxw3h6KcPT4fv
+View your app in AI Studio: (https://care-sync-phi.vercel.app/)
 
 ## Run Locally
 
